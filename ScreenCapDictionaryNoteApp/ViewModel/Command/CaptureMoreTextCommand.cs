@@ -33,7 +33,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
             }
             else
             {
-                // no change
                 return true;
             }
         }
