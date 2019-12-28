@@ -1,0 +1,700 @@
+﻿<Window x:Class="ScreenCapDictionaryNoteApp.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ScreenCapDictionaryNoteApp.ViewModel"
+        xmlns:local="clr-namespace:ScreenCapDictionaryNoteApp.View"
+        xmlns:cvt="clr-namespace:ScreenCapDictionaryNoteApp.ViewModel.Convertor"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+     
+        xmlns:cefsharpwpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Dictionary By Screenshot" Height="675" Width="1200"
+        WindowStyle="None"
+   AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+         Background="Transparent"
+        
+    
+        
+    >
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+        CaptionHeight="0"
+        ResizeBorderThickness="10" />
+    </WindowChrome.WindowChrome>
+
+
+
+
+
+    <Window.Resources>
+        <!--instanciations occur here, to access them, use Source={StaticResource [keyname]} in binding. As the instanciation occurs once, that's why they are called static resources. 
+        
+        We need to make sure all functionality point to the correct view model, don't try to instanciate datacontext brute-forcely inside MainWindow.xaml.cs, otherwise we lose autocompletion in XAML file and, the control of datacontext (e.g., child of ListView) will become difficult and require much more work to get problems around.-->
+
+        <vm:MainVM x:Key="mainVM"/>
+
+
+
+        <BitmapImage x:Key="addIcon" UriSource="/Assets/addButton.png"/>
+        <BitmapImage x:Key="addNoteIcon" UriSource="/Assets/addNote.png"/>
+        <BitmapImage x:Key="addPageIcon" UriSource="/Assets/addPage.png"/>
+        <BitmapImage x:Key="addPageViaScreenshotIcon" UriSource="/Assets/addPageViaScreenshot.png"/>
+
+        <cvt:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <cvt:BindingToVisibilityConverterVocab x:Key="BindingToVisibilityConverterVocab"/>
+        <cvt:ByteArrayToBitmapConvertor x:Key="byte2Img"/>
+        <cvt:CropLayerToBoolConverter x:Key ="CropLayerToBool"/>
+        <cvt:PageVocabToVisibility x:Key="PageVocabToVisibility"/>
+        <cvt:BooleanToVisibilityConvertor x:Key="boolToVis"/>
+        <cvt:BindingToVisibilityConverterPage x:Key="BindingToVisibilityConverterPage"/>
+        <cvt:StringToBoolConverter x:Key="StringToBoolConverter"/>
+
+
+
+        <SolidColorBrush Color="#e5e5e5" x:Key="FontColor"/>
+        <SolidColorBrush Color="#2d2d30" x:Key="DeepColor"/>
+        <SolidColorBrush Color="#252526" x:Key="DeeperColor"/>
+        <SolidColorBrush Color="#232323" x:Key="GridSplitterColor"/>
+
+        <Style TargetType="{x:Type ContextMenu}">
+
+        </Style>
+
+
+        <Style TargetType="DockPanel">
+            <Setter Property="Background" Value="{StaticResource DeepColor}"/>
+        </Style>
+
+        <Style TargetType="GridSplitter">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#232323"/>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{StaticResource FontColor}" />
+        </Style>
+
+
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+        </Style>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource FontColor}" />
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource FontColor}" />
+        </Style>
+
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="{StaticResource DeeperColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource FontColor}"/>
+
+        </Style>
+
+
+
+        <Style TargetType="toolkit:RichTextBox">
+            <Setter Property="Background" Value="{StaticResource DeeperColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource FontColor}"/>
+        </Style>
+
+        <Style TargetType="Grid">
+            <Setter Property="Background" Value="{StaticResource DeepColor}"/>
+        </Style>
+
+    </Window.Resources>
+
+
+
+
+
+
+    <DockPanel x:Name="mainWindow" DataContext="{Binding Source={StaticResource mainVM}}" LastChildFill="True"  Margin="10" Focusable="True" >
+        <DockPanel.Effect>
+            <DropShadowEffect BlurRadius="15" Direction="-90" RenderingBias="Quality" ShadowDepth="2"/>
+        </DockPanel.Effect>
+
+
+
+
+
+
+        <DockPanel x:Name="TitleBar" DockPanel.Dock="Top"  WindowChrome.IsHitTestVisibleInChrome="True" Margin="0 5"
+                   >
+            <Menu Grid.Column="0" VerticalAlignment="Center" Grid.ColumnSpan="3" Margin="10 5"  >
+                <MenuItem Header="File" Margin="2 4" BorderBrush="Transparent">
+                    <MenuItem Header="New Note" Command="{Binding NewNoteCommand}"/>
+                    <MenuItem Header="Exit"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel Grid.Column="2" Orientation="Horizontal"  HorizontalAlignment="Right">
+                <Button x:Name="MinButton" Content="&#xE949;" FontFamily="Segoe MDL2 Assets" 
+                      Padding="15 10"
+                        FontSize="10"
+                    Click="MinimizeButton_Click"
+                    DockPanel.Dock="Right" />
+
+                <Button x:Name="MaxButton" 
+                                   FontSize="10"
+                      Padding="15 10"
+                    FontFamily="Segoe MDL2 Assets"
+                    Click="MaximizeButton_Click"
+                     >
+                    <Button.Style>
+                        <Style  BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
+                            <Setter Property="Button.Content" Value="&#xE739;" />
+                            <Setter Property="Foreground" Value="{StaticResource FontColor}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                                    <Setter Property="Button.Content" Value="&#xE923;" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+
+
+                </Button>
+
+                <Button x:Name="CloseButton" Content="&#xE106;"
+                                   FontSize="10"
+                    Padding="15 10"
+                    FontFamily="Segoe MDL2 Assets"
+                    Click="CloseButton_Click"                 
+                    DockPanel.Dock="Top" />
+            </StackPanel>
+        </DockPanel>
+
+
+
+
+
+        <DockPanel DockPanel.Dock="Top">
+
+            <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0 0 0">
+                <TextBlock Text="Text Capturing Area:" Margin="5"/>
+                <RadioButton GroupName="SelectionMode" 
+                             IsHitTestVisible="{Binding CropLayer, Converter={StaticResource CropLayerToBool}, Mode=OneWay}"
+                              IsChecked="{Binding PreviousCropButtonIsSelected, Mode=TwoWay}" 
+                             Content="Use previous selection"
+                              Margin="5 5 5 5"
+                             />
+                <RadioButton GroupName="SelectionMode" 
+                             Content="Use new selection"
+                                         Margin="5 5 20 5"
+                              IsChecked="{Binding NoPreviousCropButtonIsSelected,Mode=TwoWay}" 
+                             />
+            </StackPanel>
+
+
+
+            <StackPanel Orientation="Horizontal" Grid.Column="3"  HorizontalAlignment="Right">
+                <Button  Margin="0 5 20 5" Content="Capture more text" Command="{Binding CaptureMoreTextCommand}"
+                        CommandParameter="{Binding SelectedPage.ScreenshotByteArray}"
+                        />
+
+                <Button Margin="0 5 20 5" Padding="5 0" Content="Crop image" Command="{Binding CropOriginalScreenshotCommand}" CommandParameter="{Binding SelectedPage}"
+                    
+                        />
+
+
+                <ComboBox Width="80" Margin="0 5 10 5" SelectedIndex="{Binding DisplayIndex, Mode=TwoWay}">
+                    <ComboBoxItem IsSelected="True">
+                        Display 1
+                    </ComboBoxItem>
+                    <ComboBoxItem x:Name="Display2Option">
+                        Display 2
+                    </ComboBoxItem>
+                </ComboBox>
+                <Button   x:Name="screenshotButton" Margin="10 5 20 5"  Content="Take a screenshot" Padding="5 0" Cursor="Hand" Command="{Binding ScreenCapCommand}" 
+                        CommandParameter="{Binding SelectedPage}"
+                        />
+
+
+            </StackPanel>
+        </DockPanel>
+
+
+        <Grid DockPanel.Dock="Top">
+
+        </Grid>
+
+
+        <Grid>
+            <Grid.ColumnDefinitions >
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="428*"/>
+                <ColumnDefinition Width="43*"/>
+            </Grid.ColumnDefinitions>
+
+
+
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="6*"/>
+                </Grid.ColumnDefinitions>
+
+
+                <Grid Grid.Column="0">
+                    <DockPanel  Grid.Column="0"  Margin="10 0 0 0">
+
+                        <Button  HorizontalAlignment="Stretch"
+                                 Margin="0 10 0 10"
+                                 Command="{Binding NewNoteCommand}" 
+                                 ToolTip="Add a new note"
+                                 DockPanel.Dock="Top" 
+                            
+                           >
+                            <Image  Source="{StaticResource addNoteIcon}" Height="24"/>
+
+                        </Button>
+
+                        <ListView Margin="5 0 0 15" x:Name="notesList"  ItemsSource="{Binding Notes, Mode=TwoWay}" SelectedItem="{Binding SelectedNote, Mode=TwoWay}" Grid.ColumnSpan="2"
+                           ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="Transparent"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          >
+                            <ListView.ItemTemplate>
+                                <DataTemplate >
+
+                                    <StackPanel Margin="15 10" Grid.Column="0" Orientation="Horizontal">
+                                        <StackPanel >
+                                            <Grid>
+                                                <TextBlock  Text="{Binding Name}" FontSize="15" FontWeight="Bold" TextWrapping="Wrap"/>
+                                                <TextBox  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                    <TextBox.Visibility>
+                                                        <MultiBinding Converter="{StaticResource BoolToVisibilityConverter}" >
+                                                            <Binding Path="Id" Mode="TwoWay"/>
+                                                            <Binding Source="{StaticResource mainVM}" Path="IsEditingNoteName" Mode="TwoWay"/>
+                                                            <Binding Source="{StaticResource mainVM}" Path="SelectedNote" Mode="TwoWay" />
+                                                        </MultiBinding>
+                                                    </TextBox.Visibility>
+                                                    <TextBox.InputBindings>
+                                                        <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=HasEditedNoteNameCommand}"/>
+                                                    </TextBox.InputBindings>
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="MouseDoubleClick">
+                                                            <i:InvokeCommandAction Command="{Binding Source={StaticResource mainVM}, Path=RenameNoteCommand}" CommandParameter="{Binding Source={StaticResource mainVM}, Path=SelectedNote}" />
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
+
+
+
+
+
+
+
+
+                                                </TextBox>
+
+                                            </Grid>
+                                            <TextBlock  Text="{Binding DateTime}" FontSize="12" Padding="0 5" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="New page" Command="{Binding Source={StaticResource mainVM},  Path=NewPageCommand, Mode=TwoWay}" />
+                                    <MenuItem Header="Rename" Command="{Binding Source={StaticResource mainVM},Path=RenameNoteCommand}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=DeleteNoteCommand}"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding RenameNoteCommand}" CommandParameter="{Binding SelectedNote}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+
+                        </ListView>
+                    </DockPanel>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <DockPanel Margin="4 0 20 0">
+                        <Grid DockPanel.Dock="Top">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button  
+                                HorizontalAlignment="Stretch" 
+                                Command="{Binding NewPageCommand}" 
+                                CommandParameter="{Binding SelectedNote,  Mode=TwoWay}"
+                                DockPanel.Dock="Top" 
+                                ToolTip="New page"
+                                Margin="0 10 0 10"
+                           
+                                >
+                                <Image Source="{StaticResource addPageIcon}" Height="24">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.4" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+
+                            </Button>
+
+
+                            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="1" Grid.Column="1" Opacity="0.3" Height="24"/>
+
+                            <Button x:Name="screenshotButton2"  
+                                    Grid.Column="2"
+                                    Command="{Binding NewPageViaScreenshotCommand}" 
+                                    CommandParameter="{Binding SelectedNote, Mode=TwoWay}"
+                                    HorizontalAlignment="Stretch" DockPanel.Dock="Top"
+                                    ToolTip="New page via screenshot"
+                                   
+                                    >
+                                <Image Source="{StaticResource addPageViaScreenshotIcon}" Height="24">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.4" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Button>
+
+                        </Grid>
+
+                        <Separator/>
+
+
+                        <ListView  Margin="0 0 0 15" 
+                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                   ItemsSource="{Binding Pages, Mode=TwoWay}"
+                                   x:Name="pagesList"  
+                                   SelectedItem="{Binding SelectedPage, Mode=TwoWay}" 
+                                   SelectedIndex="{Binding SelectedPageIndex,Mode=TwoWay}" 
+                                   BorderBrush="{x:Null}"    
+                                  
+                          >
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+
+                                    <StackPanel Margin="10 10 10 0" Orientation="Vertical">
+                                        <Grid>
+                                            <TextBlock  Text="{Binding Name, Mode=TwoWay}" FontSize="14" FontWeight="Bold"  TextWrapping="Wrap" />
+                                            <TextBox  
+                                                    Text="{Binding Name,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                    FontSize="14" 
+                                                    FontWeight="Bold" 
+                                                TextWrapping="Wrap"
+                                                    >
+                                                <TextBox.Visibility>
+                                                    <MultiBinding Converter="{StaticResource BindingToVisibilityConverterPage}">
+                                                        <Binding Path="Id" Mode="TwoWay"/>
+                                                        <Binding Source="{StaticResource mainVM}" Path="IsRenamingPage" Mode="TwoWay"/>
+                                                        <Binding Source="{StaticResource mainVM}" Path="SelectedPage" Mode="TwoWay" />
+                                                    </MultiBinding>
+                                                </TextBox.Visibility>
+                                            </TextBox>
+                                        </Grid>
+
+
+
+                                        <TextBlock  Text="{Binding DateTime}" FontSize="12" Padding="0 5" />
+
+                                    </StackPanel>
+
+
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+
+                            <ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Rename" Command="{Binding Source={StaticResource mainVM}, Path=StartRenamePageCommand}" CommandParameter="{Binding SelectedPage}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=DeletePageCommand}"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>
+                            <ListView.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=EndRenamePageCommand}"/>
+
+                            </ListView.InputBindings>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding StartRenamePageCommand}" CommandParameter="{Binding SelectedPage}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+
+                        </ListView>
+
+                    </DockPanel>
+                </Grid>
+
+                <GridSplitter Grid.Column="0" BorderThickness="5" BorderBrush="Transparent" />
+            </Grid>
+
+            <Grid Grid.Column="1" Grid.ColumnSpan="2">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="7*"/>
+                        <RowDefinition Height="3*" />
+                    </Grid.RowDefinitions>
+
+                    <Image  Margin=" 15 " x:Name="screenshotContainer" Grid.Row="0" 
+                       Source="{Binding SelectedPage, Converter={StaticResource byte2Img}, Mode=TwoWay}"
+                      VerticalAlignment="Top"  
+                       />
+
+
+
+
+
+                    <Grid  Grid.Column="0" Grid.Row="1" Margin=" 15 "  >
+                        <!--<DockPanel  >
+                            <DockPanel DockPanel.Dock="Top" >
+                                <Button Content="&lt;" x:Name="backButton" Click="BackButton_Click" Padding="8 4" Cursor="Hand"/>
+                                <Button Content="&gt;" x:Name="forwardButton" Click="ForwardButton_Click" Padding="8 4" HorizontalAlignment="Left" Cursor="Hand"/>
+                            </DockPanel>
+                            <cefsharpwpf:ChromiumWebBrowser  x:Name="browser" FrameLoadEnd="ChromiumWebBrowser_FrameLoadEnd"/>
+                        </DockPanel>-->
+
+
+                        <toolkit:RichTextBox x:Name="detectionContainer"
+                                     
+                                     Grid.Row="0" 
+                                     Block.LineHeight="1"
+                                     Foreground="{StaticResource FontColor}"
+                                     VerticalScrollBarVisibility="Auto" 
+                                     FontSize="20"
+                                     Text="{Binding SelectedPage.DetectionResult, Mode=TwoWay}"
+                                     SelectionChanged="DetectionContainer_SelectionChanged" 
+                                     LostFocus="DetectionContainer_LostFocus" BorderBrush="Transparent"
+                                 >
+                            <RichTextBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Japan Dict" 
+                                          Command="{Binding CheckDictionaryCommand}"
+                                          />
+
+                                    <MenuItem Header="Google Translate" 
+                                      Command="{Binding GoogleTranslateCommand}"
+                                          />
+                                    <MenuItem Command="ApplicationCommands.Cut" />
+                                    <MenuItem Command="ApplicationCommands.Copy" />
+                                    <MenuItem Command="ApplicationCommands.Paste" />
+                                    <MenuItem Command="ApplicationCommands.SelectAll" />
+
+                                </ContextMenu>
+                            </RichTextBox.ContextMenu>
+
+                            <toolkit:RichTextBox.TextFormatter>
+                                <toolkit:RtfFormatter />
+                            </toolkit:RichTextBox.TextFormatter>
+                        </toolkit:RichTextBox>
+                    </Grid>
+
+
+                    <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"  Margin="30 0"  VerticalAlignment="Top"  />
+
+
+
+
+
+                </Grid>
+
+
+
+                <Grid Grid.Column="1" Margin="20 0 20 20">
+                    <!--<Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5*"/>
+                    </Grid.RowDefinitions>-->
+
+
+
+                    <DockPanel Grid.Row="0">
+
+
+
+                        <!--<DockPanel DockPanel.Dock="Top" >
+                            <Button Content="&lt;" x:Name="backButton" Click="BackButton_Click" Padding="8 4" Cursor="Hand"/>
+                            <Button Content="&gt;" x:Name="forwardButton" Click="ForwardButton_Click" Padding="8 4" HorizontalAlignment="Left" Cursor="Hand"/>
+                        </DockPanel>-->
+                        <!--<cefsharpwpf:ChromiumWebBrowser  x:Name="browser" FrameLoadEnd="ChromiumWebBrowser_FrameLoadEnd"/>-->
+
+
+
+                    </DockPanel>
+
+                    <DockPanel Grid.Row="1"  LastChildFill="True">
+                        <!--<TextBlock Height="20"  DockPanel.Dock="Top"/>-->
+
+                        <Button Margin="0 10 10 10" Padding="10 5"  HorizontalAlignment="Left" Command="{Binding NewVocabCommand}" CommandParameter="{Binding SelectedPage}" DockPanel.Dock="Top">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{StaticResource addIcon}" Height="20">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.4" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                                <TextBlock Text="Add" VerticalAlignment="Center" Margin="5 0 0 0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.8" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Button>
+
+
+
+                        <ListView x:Name="jotNotes" 
+                                     Visibility="{Binding Vocabs.Count, Converter={StaticResource PageVocabToVisibility}}" 
+                                  ItemsSource="{Binding Vocabs, Mode=TwoWay}" 
+                                  SelectedItem="{Binding SelectedVocab, Mode=TwoWay}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="jotNotes_SelectionChanged"
+                                  >
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel x:Name="dictionaryListItem">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Grid>
+                                                <TextBlock Text="{Binding Word,Mode=TwoWay}" FontSize="22"
+                                               Margin="20 10 10 0" />
+                                                <TextBox  Text="{Binding Word,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"   Margin="20 10 10 0" FontSize="22" MinWidth="40">
+                                                    <TextBox.Visibility>
+                                                        <MultiBinding Converter="{StaticResource BindingToVisibilityConverterVocab}">
+                                                            <Binding Path="Id" Mode="TwoWay"/>
+                                                            <Binding Source="{StaticResource mainVM}" Path="IsEditingVocab" Mode="TwoWay"/>
+                                                            <Binding Source="{StaticResource mainVM}" Path="SelectedVocab" Mode="TwoWay" />
+                                                        </MultiBinding>
+                                                    </TextBox.Visibility>
+                                                </TextBox>
+
+                                            </Grid>
+                                            <Grid>
+                                                <TextBlock Text="{Binding Pronounciation,Mode=TwoWay}" 
+                                                Margin="0 0 10 2" FontWeight="Bold" FontSize="15" 
+                                                       VerticalAlignment="Bottom" />
+                                                <TextBox Text="{Binding Pronounciation,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"    
+                                                         Margin="0 0 10 2" FontSize="15"
+                                                         MinWidth="80"
+                                                         VerticalAlignment="Bottom" >
+                                                    <TextBox.Visibility>
+                                                        <MultiBinding Converter="{StaticResource BindingToVisibilityConverterVocab}">
+                                                            <Binding Path="Id" Mode="TwoWay"/>
+                                                            <Binding Source="{StaticResource mainVM}" Path="IsEditingVocab" Mode="TwoWay"/>
+                                                            <Binding Source="{StaticResource mainVM}" Path="SelectedVocab" Mode="TwoWay" />
+                                                        </MultiBinding>
+                                                    </TextBox.Visibility>
+                                                </TextBox>
+                                            </Grid>
+
+                                        </StackPanel>
+                                        <Grid>
+                                            <TextBlock Text="{Binding Explaination,Mode=TwoWay}" FontSize="16"
+                                                  Margin="20 6 20 10"
+                                                  TextWrapping="Wrap" 
+                                                       Visibility="{Binding Explaination, Converter={StaticResource StringToBoolConverter}}"
+                                                       />
+                                            <TextBox     Margin="20 4 20 10"
+                                                  TextWrapping="Wrap"  Text="{Binding Explaination,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" FontSize="16">
+                                                <TextBox.Visibility>
+                                                    <MultiBinding Converter="{StaticResource BindingToVisibilityConverterVocab}">
+                                                        <Binding Path="Id" Mode="TwoWay"/>
+                                                        <Binding Source="{StaticResource mainVM}" Path="IsEditingVocab" Mode="TwoWay"/>
+                                                        <Binding Source="{StaticResource mainVM}" Path="SelectedVocab" Mode="TwoWay" />
+                                                    </MultiBinding>
+                                                </TextBox.Visibility>
+                                            </TextBox>
+
+                                        </Grid>
+
+
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Update" Command="{Binding Source={StaticResource mainVM}, Path=StartUpdateVocabCommand}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=DeleteVocabCommand}" CommandParameter="{Binding SelectedPage, UpdateSourceTrigger=PropertyChanged}"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>
+
+
+                            <ListView.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=ToggleUpdateVocabCommand}" CommandParameter="{Binding SelectedVocab}"/>
+                            </ListView.InputBindings>
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding StartUpdateVocabCommand}" CommandParameter="{Binding SelectedVocab}" />
+                                </i:EventTrigger>
+
+                            </i:Interaction.Triggers>
+
+
+                        </ListView>
+
+                    </DockPanel>
+
+
+                    <!--<GridSplitter Grid.Row="1"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20 10"/>-->
+
+
+
+                </Grid>
+
+
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Margin="0 20"/>
+
+
+            </Grid>
+
+            <GridSplitter Grid.Column="0"  HorizontalAlignment="Right"  Margin="0 20"/>
+        </Grid>
+    </DockPanel>
+
+    <Window.WindowState>
+        <!--<Binding Path="ItemsSource" ElementName="Toolbars"  Converter="{StaticResource IEnumerableHasItemsToVisibilityConverter}"/>-->
+
+        <Binding Source="{StaticResource mainVM}" Path="WindowState"  />
+    </Window.WindowState>
+</Window>

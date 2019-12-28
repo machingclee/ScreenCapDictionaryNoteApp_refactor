@@ -1,0 +1,20 @@
+﻿<Window x:Class="ScreenCapDictionaryNoteApp.View.ScreenshotFullscreenPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScreenCapDictionaryNoteApp.View"
+        mc:Ignorable="d"
+        Title="ScreenshotFullscreenPopup" Height="450" Width="800">
+    <Canvas x:Name="fullScreenCanvas">
+        <Image x:Name="fullscreenScreenshot" Margin="0"
+           Stretch="None"
+           MouseDown="FullscreenScreenshot_MouseDown"
+           MouseMove="FullscreenScreenshot_MouseMove"
+           MouseUp="FullscreenScreenshot_MouseUp"
+            
+         Cursor="Cross"/>
+        <Rectangle x:Name="recSelection"
+            Visibility="Hidden" IsHitTestVisible="False" />
+    </Canvas>
+</Window>
