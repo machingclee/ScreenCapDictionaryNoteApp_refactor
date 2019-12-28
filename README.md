@@ -9,6 +9,6 @@ They can directly extract texts from image inside the application.
 </p>
 
 ## How to use it
-In order th enable google API, one needs to create their own google credential. For people interested they can visit <a href="https://cloud.google.com/vision/docs/quickstart">here</a> as a json file.
+In order th enable google vision API, one needs to create their own google credential. For people interested they can visit <a href="https://cloud.google.com/vision/docs/quickstart">here</a> as a json file.
 
 By downloading the source code you can already download all missing packages, run it and get an exe file inside /debug/bin, the vision API can also be enabled by placing the credential json file at the same directory of the exe file.
