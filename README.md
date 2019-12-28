@@ -1,3 +1,5 @@
 # Screen Capture Note App
+This application is written for people who want to learn a language through watching video or playing game by screen capturing. Namely, users can record his/her screen, look back and study every word of interest, record the dictionary/internet result inside the application.
 
-Since the route of deploying a .py file into an .exe file is flooded bugs, and fixing them is painful, so the application is rewritten in WPF, resulting in this project.
+![What is this](screenshot.png)
+
