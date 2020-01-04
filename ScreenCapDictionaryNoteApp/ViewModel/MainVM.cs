@@ -155,8 +155,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             }
         }
 
-        public string DictionaryBaseUrl { get; set; }
-
+        public string DictionaryBaseUrl_JapanDict { get; set; }
+        public string DictionaryBaseUrl_littleD { get; set; }
 
 
         private string _DetectionContainerContent;
@@ -331,6 +331,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public StartRenamePageCommand StartRenamePageCommand { get; set; }
         public EndRenamePageCommand EndRenamePageCommand { get; set; }
         public ToggleUpdateVocabCommand ToggleUpdateVocabCommand { get; set; }
+        public CheckDictionaryLittleDCommand CheckDictionaryLittleDCommand { get; set; }
 
         private Note _SelectedNote;
 
@@ -447,6 +448,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 StartRenamePageCommand = new StartRenamePageCommand(this);
                 EndRenamePageCommand = new EndRenamePageCommand(this);
                 ToggleUpdateVocabCommand = new ToggleUpdateVocabCommand(this);
+                CheckDictionaryLittleDCommand = new CheckDictionaryLittleDCommand(this);
 
                 Notes = new ObservableCollection<Note>();
                 Pages = new ObservableCollection<Page>();
@@ -458,7 +460,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 DisplayIndex = 0;
                 DoUsePreviousSelection = false;
                 browserAddress = "";
-                DictionaryBaseUrl = "https://www.japandict.com/";
+                DictionaryBaseUrl_JapanDict = "https://www.japandict.com/";
+                DictionaryBaseUrl_littleD = "http://dict.hjenglish.com/jp/jc/";
                 SelectedPageIndex = 0;
                 NoPreviousCropButtonIsSelected = true;
                 IsRenamingPage = false;
@@ -738,11 +741,26 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public event EventHandler ConfirmJapanDictSelection;
 
 
-        public void CheckViaDictionary()
+        public void CheckViaDictionary_JapanDict()
         {
             string selection = SelectedTextInDectionContainer;
             ConfirmJapanDictSelection(this, new EventArgs());
         }
+
+
+        public event EventHandler ConfirmJlittleDSelection;
+
+
+        public void CheckViaDictionary_littleD()
+        {
+            string selection = SelectedTextInDectionContainer;
+            ConfirmJlittleDSelection(this, new EventArgs());
+        }
+
+
+
+
+
 
 
         public event EventHandler GoogleTranslateComplete;

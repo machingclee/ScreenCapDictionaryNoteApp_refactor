@@ -212,7 +212,7 @@
                         />
 
 
-                <ComboBox Width="80" Margin="0 5 10 5" SelectedIndex="{Binding DisplayIndex, Mode=TwoWay}">
+                <ComboBox Width="80" Margin="0 5 20 5" SelectedIndex="{Binding DisplayIndex, Mode=TwoWay}">
                     <ComboBoxItem IsSelected="True">
                         Display 1
                     </ComboBoxItem>
@@ -220,9 +220,9 @@
                         Display 2
                     </ComboBoxItem>
                 </ComboBox>
-                <Button   x:Name="screenshotButton" Margin="10 5 20 5"  Content="Take a screenshot" Padding="5 0" Cursor="Hand" Command="{Binding ScreenCapCommand}" 
+                <!--<Button   x:Name="screenshotButton" Margin="10 5 20 5"  Content="Take a screenshot" Padding="5 0" Cursor="Hand" Command="{Binding ScreenCapCommand}" 
                         CommandParameter="{Binding SelectedPage}"
-                        />
+                        />-->
 
 
             </StackPanel>
@@ -498,18 +498,12 @@
                                  >
                             <RichTextBox.ContextMenu>
                                 <ContextMenu>
+                                    <MenuItem Header="沪江小D" 
+                                            Command="{Binding CheckDictionaryLittleDCommand}"
+                                          />
                                     <MenuItem Header="Japan Dict" 
                                           Command="{Binding CheckDictionaryCommand}"
                                           />
-
-                                    <MenuItem Header="Google Translate" 
-                                      Command="{Binding GoogleTranslateCommand}"
-                                          />
-                                    <MenuItem Command="ApplicationCommands.Cut" />
-                                    <MenuItem Command="ApplicationCommands.Copy" />
-                                    <MenuItem Command="ApplicationCommands.Paste" />
-                                    <MenuItem Command="ApplicationCommands.SelectAll" />
-
                                 </ContextMenu>
                             </RichTextBox.ContextMenu>
 

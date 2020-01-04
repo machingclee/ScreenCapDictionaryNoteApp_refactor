@@ -7,10 +7,10 @@ using System.Windows.Input;
 
 namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 {
-    public class CheckDictionaryCommand : ICommand
+    public class CheckDictionaryLittleDCommand : ICommand
     {
         public MainVM MainVM { get; set; }
-        public CheckDictionaryCommand(MainVM vm)
+        public CheckDictionaryLittleDCommand(MainVM vm)
         {
             MainVM = vm;
         }
@@ -28,7 +28,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 
         public void Execute(object parameter)
         {
-            MainVM.CheckViaDictionary_JapanDict();
+            MainVM.CheckViaDictionary_littleD();
         }
     }
 }

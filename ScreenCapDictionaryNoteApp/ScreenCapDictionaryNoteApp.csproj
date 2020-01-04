@@ -253,6 +253,7 @@
     <Compile Include="Model\SqliteSequence.cs" />
     <Compile Include="Model\Vocab.cs" />
     <Compile Include="ViewModel\Command\CaptureMoreTextCommand.cs" />
+    <Compile Include="ViewModel\Command\CheckDictionaryLittleDCommand.cs" />
     <Compile Include="ViewModel\Command\CheckDictionaryCommand.cs" />
     <Compile Include="ViewModel\Command\EndRenamePageCommand.cs" />
     <Compile Include="ViewModel\Command\StartRenamePageCommand.cs" />

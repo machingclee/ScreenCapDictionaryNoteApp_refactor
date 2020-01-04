@@ -52,7 +52,11 @@ namespace ScreenCapDictionaryNoteApp.View
                 Display2Option.IsEnabled = false;
             }
 
-            MainVM = mainWindow.DataContext as MainVM;
+
+            //MainVM = mainWindow.DataContext as MainVM;
+            MainVM = Resources["mainVM"] as MainVM;
+
+
             LeftButtonIsPressed = false;
             CropStart = new double[] { 0, 0 };
             CropEnd = new double[] { 0, 0 };
@@ -64,7 +68,10 @@ namespace ScreenCapDictionaryNoteApp.View
             MainVM.CheckApplicationLyingInWhichDisplay += ExtractLyingDisplayToVM;
 
             //event
-            MainVM.ConfirmJapanDictSelection += FetchTranslationResult;
+            MainVM.ConfirmJapanDictSelection += FetchTranslationResult_JananDict;
+
+            //event
+            MainVM.ConfirmJlittleDSelection += FetchTranslationResult_LittleD;
 
             //event
             MainVM.ScreenshotIsTaken += InsertScreenshot;
@@ -169,14 +176,22 @@ namespace ScreenCapDictionaryNoteApp.View
             detectionContainer.Document.Blocks.Add(new Paragraph(new Run(MainVM.TranslationResult)));
         }
 
-        private void FetchTranslationResult(object sender, EventArgs args)
+        private void FetchTranslationResult_JananDict(object sender, EventArgs args)
         {
             //browser.Address = MainVM.DictionaryBaseUrl + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng";
 
-
-            Process.Start(MainVM.DictionaryBaseUrl + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng");
+            Process.Start(MainVM.DictionaryBaseUrl_JapanDict + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng");
 
         }
+
+        private void FetchTranslationResult_LittleD(object sender, EventArgs args)
+        {
+            //browser.Address = MainVM.DictionaryBaseUrl + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng";
+
+            Process.Start(MainVM.DictionaryBaseUrl_littleD + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer));
+
+        }
+
 
 
 
