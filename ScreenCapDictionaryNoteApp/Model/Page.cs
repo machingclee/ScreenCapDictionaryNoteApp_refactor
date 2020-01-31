@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace ScreenCapDictionaryNoteApp.Model
 {
-    public class Page : IWithIdAndName
+    public class Page : IWithIdAndName, IHaveVersion
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -53,6 +53,7 @@ namespace ScreenCapDictionaryNoteApp.Model
             get { return _CroppedScreenshotByteArray; }
             set { _CroppedScreenshotByteArray = value; }
         }
+        public int Version { get; set; }
 
 
 

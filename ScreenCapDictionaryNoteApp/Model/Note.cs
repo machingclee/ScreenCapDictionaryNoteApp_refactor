@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ScreenCapDictionaryNoteApp.Model
 {
-    public class Note : IWithIdAndName
+    public class Note : IWithIdAndName, IHaveVersion
     {
 
         private int _Id;
@@ -30,7 +30,7 @@ namespace ScreenCapDictionaryNoteApp.Model
 
         public string DateTime { get; set; }
 
-
+        public int Version { get; set; }
 
         public int? LastViewedPageIndex { get; set; }
     }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ScreenCapDictionaryNoteApp.Model
 {
-    public class Vocab : IWithIdAndName
+    public class Vocab : IWithIdAndName, IHaveVersion
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -22,5 +22,6 @@ namespace ScreenCapDictionaryNoteApp.Model
         public string Pronounciation { get; set; }
 
         public string Explaination { get; set; }
+        public int Version { get; set; }
     }
 }

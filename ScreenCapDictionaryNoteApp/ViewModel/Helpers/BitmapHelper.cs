@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
@@ -124,18 +125,55 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers
         public static BitmapImage BitmapImageFromPath(string filePath)
         {
             var image = new BitmapImage();
-
-            using (var stream = File.OpenRead(filePath))
+            try
             {
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = stream;
-                bitmap.EndInit();
-                image = bitmap;
-            }
+                using (var stream = File.OpenRead(filePath))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                    image = bitmap;
+                }
 
-            return image;
+                return image;
+            }
+            catch (Exception err)
+            {
+                /*
+                when exception is catched, it is very likely the absolute path in the database in incorrect (for instance, we move the project folder to somewhere else),
+                we accordingly find a new path and update it in database.   
+                
+                Only alter the database when exception occurs in order to save resources.
+                */
+                string newFilePath = Path.Combine(Environment.CurrentDirectory, "Screenshot", Regex.Replace(filePath, @"^C:\\.*?Screenshot\\", ""));
+
+                using (var stream = File.OpenRead(newFilePath))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                    image = bitmap;
+                }
+
+                var mainVM = App.Current.MainWindow.Resources["mainVM"] as MainVM;
+                if (newFilePath.Contains("__cropped__"))
+                {
+                    mainVM.SelectedPage.CroppedScreenshotByteArray = newFilePath;
+                }
+                else
+                {
+                    mainVM.SelectedPage.ScreenshotByteArray = newFilePath;
+                }
+
+                DatabaseHelper.Update(mainVM.SelectedPage);
+
+                return image;
+
+            }
         }
 
 

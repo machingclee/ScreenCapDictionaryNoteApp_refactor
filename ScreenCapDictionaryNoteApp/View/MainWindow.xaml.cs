@@ -349,6 +349,9 @@ namespace ScreenCapDictionaryNoteApp.View
             screenshotContainer.Source = null;
 
             MainVM.Pages[MainVM.SelectedPageIndex].CroppedScreenshotByteArray = BitmapHelper.SaveCroppedBitmapReturnPath(screenshotPopup.CroppedImage, MainVM.Pages[MainVM.SelectedPageIndex]);
+
+            MainVM.Pages[MainVM.SelectedPageIndex].Version++;
+
             DatabaseHelper.Update(MainVM.Pages[MainVM.SelectedPageIndex]);
             if (pagesList.Items.Count > 0)
             {
@@ -436,6 +439,7 @@ namespace ScreenCapDictionaryNoteApp.View
                 string RtfString = RtfHelper.GetRtfString(range);
                 MainVM.DetectionContainerContent = RtfString;
                 MainVM.Pages[MainVM.SelectedPageIndex].DetectionResult = RtfString;
+                MainVM.Pages[MainVM.SelectedPageIndex].Version++;
                 DatabaseHelper.Update(MainVM.Pages[MainVM.SelectedPageIndex]);
 
             }

@@ -245,6 +245,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Interface\IHaveVersion.cs" />
     <Compile Include="Interface\IWithIdAndName.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\Page.cs" />
@@ -272,6 +273,7 @@
     <Compile Include="ViewModel\Command\RenameNoteCommand.cs" />
     <Compile Include="ViewModel\Command\ScreenCapCommand.cs" />
     <Compile Include="ViewModel\Command\StartUpdateVocabCommand.cs" />
+    <Compile Include="ViewModel\Command\SyncVocabsCommand.cs" />
     <Compile Include="ViewModel\Command\UsePreviousSelectionCommand.cs" />
     <Compile Include="ViewModel\Convertor\BindingToVisibilityConverterPage.cs" />
     <Compile Include="ViewModel\Convertor\BindingToVisibilityConverterVocab.cs" />

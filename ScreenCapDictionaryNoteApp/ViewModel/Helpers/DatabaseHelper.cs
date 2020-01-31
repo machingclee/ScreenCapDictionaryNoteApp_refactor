@@ -77,6 +77,10 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers
         {
             bool success = false;
             int numberOfRows;
+
+
+
+
             using (SQLiteConnection connection = new SQLiteConnection(dbFile))
             {
                 connection.CreateTable<T>();

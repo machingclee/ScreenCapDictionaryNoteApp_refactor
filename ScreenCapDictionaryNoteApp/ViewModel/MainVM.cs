@@ -1,4 +1,5 @@
 ﻿using ImageProcessor.Imaging;
+using Newtonsoft.Json;
 using ScreenCapDictionaryNoteApp.Model;
 using ScreenCapDictionaryNoteApp.ViewModel.Command;
 using ScreenCapDictionaryNoteApp.ViewModel.Helpers;
@@ -10,6 +11,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Input;
@@ -332,6 +335,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public EndRenamePageCommand EndRenamePageCommand { get; set; }
         public ToggleUpdateVocabCommand ToggleUpdateVocabCommand { get; set; }
         public CheckDictionaryLittleDCommand CheckDictionaryLittleDCommand { get; set; }
+        public SyncVocabsCommand SyncVocabsCommand { get; set; }
 
         private Note _SelectedNote;
 
@@ -449,6 +453,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 EndRenamePageCommand = new EndRenamePageCommand(this);
                 ToggleUpdateVocabCommand = new ToggleUpdateVocabCommand(this);
                 CheckDictionaryLittleDCommand = new CheckDictionaryLittleDCommand(this);
+                SyncVocabsCommand = new SyncVocabsCommand(this);
 
                 Notes = new ObservableCollection<Note>();
                 Pages = new ObservableCollection<Page>();
@@ -479,7 +484,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             Note note = new Note()
             {
                 Name = "New Note",
-                DateTime = DateTime.Now.ToShortDateString()
+                DateTime = DateTime.Now.ToShortDateString(),
+                Version = 0
+
             };
             DatabaseHelper.Insert(note);
             ReadNotes();
@@ -610,7 +617,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 {
                     Name = "Page",
                     NoteId = SelectedNote.Id,
-                    DateTime = DateTime.Now.ToShortDateString()
+                    DateTime = DateTime.Now.ToShortDateString(),
+                    Version = 0
                 };
                 DatabaseHelper.Insert(page);
             }
@@ -630,7 +638,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                     Word = "New Word",
                     Name = "New Word",
                     Pronounciation = "Pronounciation",
-                    Explaination = "Description."
+                    Explaination = "Description.",
+                    Version = 0
                 };
                 DatabaseHelper.Insert(vocab);
             }
@@ -674,6 +683,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
         public void HasEditedNoteName()
         {
+            SelectedNote.Version++;
             DatabaseHelper.Update(SelectedNote);
             IsEditingNoteName = false;
         }
@@ -721,6 +731,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
             SelectedPage.ScreenshotByteArray = CurrentScreenshot;
             SelectedPage.CroppedScreenshotByteArray = null;
+            SelectedPage.Version++;
             DatabaseHelper.Update(SelectedPage);
             ReadPages();
             ScreenshotIsTaken(this, new EventArgs());
@@ -783,8 +794,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public void EndUpdateVocab()
         {
             IsEditingVocab = false;
+            SelectedVocab.Version++;
             DatabaseHelper.Update(SelectedVocab);
-
         }
 
 
@@ -829,7 +840,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 NoteId = SelectedNote.Id,
                 Name = "Page",
                 DateTime = DateTime.Now.ToShortDateString(),
-                ScreenshotByteArray = CurrentScreenshot
+                ScreenshotByteArray = CurrentScreenshot,
+                Version = 0
             };
             newPage.ScreenshotByteArray = CurrentScreenshot;
             DatabaseHelper.Insert(newPage);
@@ -856,7 +868,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public void EndRenamePage()
         {
             IsRenamingPage = false;
+            SelectedPage.Version++;
             DatabaseHelper.Update(SelectedPage);
+
             ReadPages();
             if (Pages.Count > 0)
             {
@@ -880,6 +894,51 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             {
                 EndUpdateVocab();
             }
+        }
+
+
+        private class SyncInfoModel
+        {
+            public List<Note> Notes { get; set; }
+            public List<Page> Pages { get; set; }
+            public List<Vocab> Vocabs { get; set; }
+        }
+
+
+        public async void SyncToWebServer()
+        {
+            List<Note> notes = DatabaseHelper.Read<Note>();
+            List<Page> pages = DatabaseHelper.Read<Page>();
+            List<Vocab> vocabs = DatabaseHelper.Read<Vocab>();
+
+            var syncInfo = new SyncInfoModel()
+            {
+                Notes = notes,
+                Pages = pages,
+                Vocabs = vocabs
+            };
+
+            var jsonString = JsonConvert.SerializeObject(syncInfo);
+
+            string postRequestEndPoint = "https://localhost:44374/api/ScreenCap";
+
+
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                try
+                {
+
+                    var response = await client.PostAsync(postRequestEndPoint, content);
+                    var result = response.Content.ReadAsStringAsync();
+
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                }
+            }
+
         }
 
 
