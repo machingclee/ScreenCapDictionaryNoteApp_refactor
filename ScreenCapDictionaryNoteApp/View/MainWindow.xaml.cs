@@ -1,6 +1,7 @@
 ﻿using CefSharp;
 using ImageProcessor.Imaging;
 using Newtonsoft.Json.Linq;
+using ScreenCapDictionaryNoteApp.Interface;
 using ScreenCapDictionaryNoteApp.Model;
 using ScreenCapDictionaryNoteApp.ViewModel;
 using ScreenCapDictionaryNoteApp.ViewModel.Helpers;
@@ -22,6 +23,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static ScreenCapDictionaryNoteApp.ViewModel.MainVM;
 using Application = System.Windows.Application;
 
 namespace ScreenCapDictionaryNoteApp.View
@@ -39,22 +41,36 @@ namespace ScreenCapDictionaryNoteApp.View
 
         SolidColorBrush fillStyle = new SolidColorBrush(Color.FromArgb((byte)Math.Floor(0.4 * 255), 255, 0, 0));
 
-
-
         public MainWindow()
         {
-
             InitializeComponent();
 
-            mainWindow.MouseLeftButtonDown += delegate { DragMove(); };
+            mainWindow.MouseLeftButtonDown += delegate
+            {
+                try
+                {
+                    DragMove();
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                }
+            };
             if (Screen.AllScreens.Length < 2)
             {
                 Display2Option.IsEnabled = false;
             }
 
 
+
+
             //MainVM = mainWindow.DataContext as MainVM;
             MainVM = Resources["mainVM"] as MainVM;
+
+
+            //event 
+            MainVM.ScrollToSelectedPagePlz += (sender, arg) => { pagesList.ScrollIntoView(MainVM.SelectedPage); };
+
 
 
             LeftButtonIsPressed = false;
@@ -64,14 +80,19 @@ namespace ScreenCapDictionaryNoteApp.View
             MainVM.browserAddress = "https://www.japandict.com/";
 
 
+            //event
+            MainVM.DataSubmitted += (sender, eventArgs) =>
+            {
+                string message = (eventArgs as DataSubmittedEventArgs).Message;
+                var messagePopup = new Notification(message);
+                messagePopup.ShowDialog();
+            };
+
+
+
             //event 
             MainVM.CheckApplicationLyingInWhichDisplay += ExtractLyingDisplayToVM;
 
-            //event
-            MainVM.ConfirmJapanDictSelection += FetchTranslationResult_JananDict;
-
-            //event
-            MainVM.ConfirmJlittleDSelection += FetchTranslationResult_LittleD;
 
             //event
             MainVM.ScreenshotIsTaken += InsertScreenshot;
@@ -92,6 +113,8 @@ namespace ScreenCapDictionaryNoteApp.View
 
             //event
             MainVM.CaptureFromScreenshotNow += ScrapMoreFromOriginalScreenshot;
+
+
 
             //event
             MainVM.RenameNoteStarted += (sender, arg) =>
@@ -176,21 +199,12 @@ namespace ScreenCapDictionaryNoteApp.View
             detectionContainer.Document.Blocks.Add(new Paragraph(new Run(MainVM.TranslationResult)));
         }
 
-        private void FetchTranslationResult_JananDict(object sender, EventArgs args)
-        {
-            //browser.Address = MainVM.DictionaryBaseUrl + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng";
 
-            Process.Start(MainVM.DictionaryBaseUrl_JapanDict + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng");
 
-        }
 
-        private void FetchTranslationResult_LittleD(object sender, EventArgs args)
-        {
-            //browser.Address = MainVM.DictionaryBaseUrl + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer) + "?lang=eng";
 
-            Process.Start(MainVM.DictionaryBaseUrl_littleD + HttpUtility.UrlEncode(MainVM.SelectedTextInDectionContainer));
 
-        }
+
 
 
 
@@ -210,6 +224,7 @@ namespace ScreenCapDictionaryNoteApp.View
         {
             var lastVisited = MainVM.Pages[MainVM.SelectedPageIndex];
             pagesList.SelectedItem = lastVisited;
+
         }
 
 
@@ -288,6 +303,9 @@ namespace ScreenCapDictionaryNoteApp.View
                     detectionContainer.Document.Blocks.Add(new Paragraph(new Run("mo text ar dai gor")));
                 }
             }
+
+
+
         }
 
 
@@ -348,11 +366,13 @@ namespace ScreenCapDictionaryNoteApp.View
             MainVM.CropLayer = screenshotPopup.CropLayer;
             screenshotContainer.Source = null;
 
-            MainVM.Pages[MainVM.SelectedPageIndex].CroppedScreenshotByteArray = BitmapHelper.SaveCroppedBitmapReturnPath(screenshotPopup.CroppedImage, MainVM.Pages[MainVM.SelectedPageIndex]);
+            var selectedPage = MainVM.Pages[MainVM.SelectedPageIndex];
 
-            MainVM.Pages[MainVM.SelectedPageIndex].Version++;
+            selectedPage.CroppedScreenshotByteArray = BitmapHelper.SaveCroppedBitmapReturnPath(screenshotPopup.CroppedImage, selectedPage);
+            selectedPage.Version++;
+            selectedPage.IsImgNewerVersion = true;
 
-            DatabaseHelper.Update(MainVM.Pages[MainVM.SelectedPageIndex]);
+            DatabaseHelper.Update(selectedPage);
             if (pagesList.Items.Count > 0)
             {
 
@@ -440,6 +460,7 @@ namespace ScreenCapDictionaryNoteApp.View
                 MainVM.DetectionContainerContent = RtfString;
                 MainVM.Pages[MainVM.SelectedPageIndex].DetectionResult = RtfString;
                 MainVM.Pages[MainVM.SelectedPageIndex].Version++;
+                MainVM.Pages[MainVM.SelectedPageIndex].IsNewerVersion = true;
                 DatabaseHelper.Update(MainVM.Pages[MainVM.SelectedPageIndex]);
 
             }

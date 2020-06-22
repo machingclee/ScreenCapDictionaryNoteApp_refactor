@@ -158,8 +158,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             }
         }
 
-        public string DictionaryBaseUrl_JapanDict { get; set; }
-        public string DictionaryBaseUrl_littleD { get; set; }
+
+
 
 
         private string _DetectionContainerContent;
@@ -336,9 +336,13 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public ToggleUpdateVocabCommand ToggleUpdateVocabCommand { get; set; }
         public CheckDictionaryLittleDCommand CheckDictionaryLittleDCommand { get; set; }
         public SyncVocabsCommand SyncVocabsCommand { get; set; }
+        public CheckDictionaryWeblioCommand CheckDictionaryWeblioCommand { get; set; }
+        public CheckDictionaryTanoshiiJapaneseCommand CheckDictionaryTanoshiiJapaneseCommand { get; set; }
 
         private Note _SelectedNote;
 
+
+        public event EventHandler ScrollToSelectedPagePlz;
 
 
         public Note SelectedNote
@@ -356,17 +360,11 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 {
                     if (SelectedNote.LastViewedPageIndex < Pages.Count)
                     {
+
                         SelectedPage = Pages[SelectedNote.LastViewedPageIndex ?? 0];
+                        ScrollToSelectedPagePlz(this, new EventArgs());
                     }
                 }
-
-
-
-                //if (Pages.Count > 0)
-                //{
-                //    SelectedPage = Pages[0];
-                //}
-
             }
         }
 
@@ -409,6 +407,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
         public MainVM()
         {
+
+
+
             if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
             {
                 Notes = new ObservableCollection<Note>();
@@ -430,6 +431,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             }
             else
             {
+
                 WindowState = System.Windows.WindowState.Normal;
                 NewNoteCommand = new NewNoteCommand(this);
                 DeleteNoteCommand = new DeleteNoteCommand(this);
@@ -440,7 +442,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 HasEditedNoteNameCommand = new HasEditedNoteNameCommand(this);
                 UsePreviousSelectionCommand = new UsePreviousSelectionCommand(this);
                 DoNotUsePreviousSelectionCommand = new DoNotUsePreviousSelectionCommand(this);
-                CheckDictionaryCommand = new CheckDictionaryCommand(this);
+                CheckDictionaryCommand = new CheckDictionaryCommand();
                 GoogleTranslateCommand = new GoogleTranslateCommand(this);
                 DeleteVocabCommand = new DeleteVocabCommand(this);
                 NewVocabCommand = new NewVocabCommand(this);
@@ -452,8 +454,10 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 StartRenamePageCommand = new StartRenamePageCommand(this);
                 EndRenamePageCommand = new EndRenamePageCommand(this);
                 ToggleUpdateVocabCommand = new ToggleUpdateVocabCommand(this);
-                CheckDictionaryLittleDCommand = new CheckDictionaryLittleDCommand(this);
+                CheckDictionaryLittleDCommand = new CheckDictionaryLittleDCommand();
                 SyncVocabsCommand = new SyncVocabsCommand(this);
+                CheckDictionaryWeblioCommand = new CheckDictionaryWeblioCommand();
+                CheckDictionaryTanoshiiJapaneseCommand = new CheckDictionaryTanoshiiJapaneseCommand();
 
                 Notes = new ObservableCollection<Note>();
                 Pages = new ObservableCollection<Page>();
@@ -465,8 +469,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 DisplayIndex = 0;
                 DoUsePreviousSelection = false;
                 browserAddress = "";
-                DictionaryBaseUrl_JapanDict = "https://www.japandict.com/";
-                DictionaryBaseUrl_littleD = "http://dict.hjenglish.com/jp/jc/";
+
+
                 SelectedPageIndex = 0;
                 NoPreviousCropButtonIsSelected = true;
                 IsRenamingPage = false;
@@ -485,7 +489,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             {
                 Name = "New Note",
                 DateTime = DateTime.Now.ToShortDateString(),
-                Version = 0
+                Version = 0,
+                IsNewerVersion = true
 
             };
             DatabaseHelper.Insert(note);
@@ -502,8 +507,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             {
                 Notes.Add(note);
             }
-
-
         }
 
 
@@ -521,14 +524,10 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
                 Pages.Clear();
 
-
                 foreach (var page in pages)
                 {
                     Pages.Add(page);
                 }
-
-
-
 
             }
             else
@@ -580,8 +579,16 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             DatabaseHelper.Delete(SelectedNote);
 
 
+
             foreach (Page page in Pages)
             {
+                var vocabs = DatabaseHelper.Read<Vocab>().Where(v => v.PageId == page.Id);
+                foreach (var vocab in vocabs)
+                {
+                    DatabaseHelper.Delete(vocab);
+                }
+
+
                 if (page.ScreenshotByteArray != null)
                 {
                     File.Delete(page.ScreenshotByteArray);
@@ -591,6 +598,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 {
                     File.Delete(page.CroppedScreenshotByteArray);
                 }
+
+                DatabaseHelper.Delete(page);
 
             }
 
@@ -618,7 +627,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                     Name = "Page",
                     NoteId = SelectedNote.Id,
                     DateTime = DateTime.Now.ToShortDateString(),
-                    Version = 0
+                    Version = 0,
+                    IsNewerVersion = true
                 };
                 DatabaseHelper.Insert(page);
             }
@@ -639,7 +649,8 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                     Name = "New Word",
                     Pronounciation = "Pronounciation",
                     Explaination = "Description.",
-                    Version = 0
+                    Version = 0,
+                    IsNewerVersion = true
                 };
                 DatabaseHelper.Insert(vocab);
             }
@@ -654,6 +665,12 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public void DeletePage()
         {
             DatabaseHelper.Delete(SelectedPage);
+            var vocabs = DatabaseHelper.Read<Vocab>().Where(v => v.PageId == SelectedPage.Id);
+
+            foreach (var vocab in vocabs)
+            {
+                DatabaseHelper.Delete(vocab);
+            }
 
             if (SelectedPage.CroppedScreenshotByteArray != null)
             {
@@ -664,12 +681,13 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             {
                 File.Delete(SelectedPage.ScreenshotByteArray);
             }
-
-
-
-
             ReadPages();
         }
+
+
+
+
+
 
 
 
@@ -684,6 +702,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public void HasEditedNoteName()
         {
             SelectedNote.Version++;
+            SelectedNote.IsNewerVersion = true;
             DatabaseHelper.Update(SelectedNote);
             IsEditingNoteName = false;
         }
@@ -732,6 +751,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             SelectedPage.ScreenshotByteArray = CurrentScreenshot;
             SelectedPage.CroppedScreenshotByteArray = null;
             SelectedPage.Version++;
+            SelectedPage.IsNewerVersion = true;
             DatabaseHelper.Update(SelectedPage);
             ReadPages();
             ScreenshotIsTaken(this, new EventArgs());
@@ -746,30 +766,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         {
             DoUsePreviousSelection = false;
         }
-
-
-
-        public event EventHandler ConfirmJapanDictSelection;
-
-
-        public void CheckViaDictionary_JapanDict()
-        {
-            string selection = SelectedTextInDectionContainer;
-            ConfirmJapanDictSelection(this, new EventArgs());
-        }
-
-
-        public event EventHandler ConfirmJlittleDSelection;
-
-
-        public void CheckViaDictionary_littleD()
-        {
-            string selection = SelectedTextInDectionContainer;
-            ConfirmJlittleDSelection(this, new EventArgs());
-        }
-
-
-
 
 
 
@@ -795,6 +791,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         {
             IsEditingVocab = false;
             SelectedVocab.Version++;
+            SelectedVocab.IsNewerVersion = true;
             DatabaseHelper.Update(SelectedVocab);
         }
 
@@ -841,7 +838,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 Name = "Page",
                 DateTime = DateTime.Now.ToShortDateString(),
                 ScreenshotByteArray = CurrentScreenshot,
-                Version = 0
+                Version = 0,
+                IsNewerVersion = true,
+                IsImgNewerVersion = true
             };
             newPage.ScreenshotByteArray = CurrentScreenshot;
             DatabaseHelper.Insert(newPage);
@@ -869,6 +868,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         {
             IsRenamingPage = false;
             SelectedPage.Version++;
+            SelectedPage.IsNewerVersion = true;
             DatabaseHelper.Update(SelectedPage);
 
             ReadPages();
@@ -904,44 +904,117 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             public List<Vocab> Vocabs { get; set; }
         }
 
-
-        public async void SyncToWebServer()
+        private class SyncInfoIdModel
         {
-            List<Note> notes = DatabaseHelper.Read<Note>();
-            List<Page> pages = DatabaseHelper.Read<Page>();
-            List<Vocab> vocabs = DatabaseHelper.Read<Vocab>();
-
-            var syncInfo = new SyncInfoModel()
-            {
-                Notes = notes,
-                Pages = pages,
-                Vocabs = vocabs
-            };
-
-            var jsonString = JsonConvert.SerializeObject(syncInfo);
-
-            string postRequestEndPoint = "https://localhost:44374/api/ScreenCap";
-
-
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-                try
-                {
-
-                    var response = await client.PostAsync(postRequestEndPoint, content);
-                    var result = response.Content.ReadAsStringAsync();
-
-                }
-                catch (Exception err)
-                {
-                    Debug.WriteLine(err.Message);
-                }
-            }
-
+            public List<int> NoteIds { get; set; }
+            public List<int> PageIds { get; set; }
+            public List<int> VocabIds { get; set; }
         }
 
 
 
+
+
+        public event EventHandler DataSubmitted;
+        public class DataSubmittedEventArgs : EventArgs
+        {
+            public string Message { get; set; }
+            public DataSubmittedEventArgs(string msg)
+            {
+                Message = msg;
+            }
+        }
+
+
+
+
+        private void RemoveFromS3(string filePath)
+        {
+            string imageName = BitmapHelper.imageNameFromFilePath(filePath);
+            AWSHelper.RemoveFile(imageName);
+        }
+
+
+
+        public async void SyncToWebServer()
+        {
+            try
+            {
+
+                var processedPage = new List<string>();
+                string postRequestEndPoint = "http://192.168.86.24:3000/screencap/upload";
+                string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTkyMjI1NjYzLCJleHAiOjE1OTQ4MTc2NjN9.8qwthOhdcTiHA6GohlFqKCp1ZJKcLhC12obkqzYEPXo";
+
+
+                List<Note> allNotes = DatabaseHelper.Read<Note>();
+
+                List<Page> allPages = DatabaseHelper.Read<Page>();
+                List<Vocab> allVocabs = DatabaseHelper.Read<Vocab>();
+
+
+                foreach (var page in allPages.ToList())
+                {
+                    if (page.CroppedScreenshotByteArray == null)
+                    {
+                        var list = allVocabs.RemoveAll(vocab => vocab.PageId == page.Id);
+                        allPages.Remove(page);
+                    }
+                }
+
+
+
+
+
+
+                // ------------------- add necessary update  ------------------- 
+
+                var syncInfo = new SyncInfoModel()
+                {
+                    Notes = allNotes,
+                    Pages = allPages,
+                    Vocabs = allVocabs
+                };
+
+                foreach (Page page in allPages)
+                {
+                    if (!page.IsSyncToS3)
+                    {
+                        if (page.CroppedScreenshotByteArray != null)
+                        {
+                            AWSHelper.UploadFileAsync("cclee", page.CroppedScreenshotByteArray);
+                            page.IsSyncToS3 = true;
+                            DatabaseHelper.Update(page);
+                        }
+                    }
+                }
+
+
+                var jsonStringForUpdate = JsonConvert.SerializeObject(syncInfo);
+
+
+                using (var client = new HttpClient())
+                {
+
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+                    var updateContent = new StringContent(jsonStringForUpdate, Encoding.UTF8, "application/json");
+
+                    try
+                    {
+                        await client.PostAsync(postRequestEndPoint, updateContent);
+                    }
+                    catch (Exception err)
+                    {
+                        Debug.WriteLine(err.Message);
+                    }
+                }
+
+                DataSubmitted(this, new DataSubmittedEventArgs(String.Join(", ", processedPage)));
+            }
+            catch (Exception err)
+            {
+                DataSubmitted(this, new DataSubmittedEventArgs(err.Message));
+            }
+        }
     }
 }

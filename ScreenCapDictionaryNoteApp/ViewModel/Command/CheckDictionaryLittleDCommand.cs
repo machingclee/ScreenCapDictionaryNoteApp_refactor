@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ScreenCapDictionaryNoteApp.ViewModel.Helpers;
+using ScreenCapDictionaryNoteApp.ViewModel.Helpers.TranslationHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +11,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 {
     public class CheckDictionaryLittleDCommand : ICommand
     {
-        public MainVM MainVM { get; set; }
-        public CheckDictionaryLittleDCommand(MainVM vm)
-        {
-            MainVM = vm;
-        }
-
         public event EventHandler CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
@@ -28,7 +24,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 
         public void Execute(object parameter)
         {
-            MainVM.CheckViaDictionary_littleD();
+            var translator = new Translation();
+            translator.SetTranslator(new LittleD());
+            translator.Translate();
         }
     }
 }

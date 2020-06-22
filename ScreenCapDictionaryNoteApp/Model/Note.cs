@@ -32,6 +32,8 @@ namespace ScreenCapDictionaryNoteApp.Model
 
         public int Version { get; set; }
 
+        public bool IsNewerVersion { get; set; }
+
         public int? LastViewedPageIndex { get; set; }
     }
 }

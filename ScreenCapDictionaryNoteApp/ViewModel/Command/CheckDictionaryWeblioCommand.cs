@@ -1,24 +1,19 @@
-﻿
-using ScreenCapDictionaryNoteApp.ViewModel.Helpers;
+﻿using ScreenCapDictionaryNoteApp.ViewModel.Helpers;
 using ScreenCapDictionaryNoteApp.ViewModel.Helpers.TranslationHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 {
-    public class CheckDictionaryCommand : ICommand
+    public class CheckDictionaryWeblioCommand : ICommand
     {
         public MainVM MainVM { get; set; }
 
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+
+
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {
@@ -28,7 +23,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
         public void Execute(object parameter)
         {
             var translator = new Translation();
-            translator.SetTranslator(new JapanDict());
+            translator.SetTranslator(new Weblio());
             translator.Translate();
         }
     }

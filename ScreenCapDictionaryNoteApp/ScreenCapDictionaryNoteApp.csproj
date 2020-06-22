@@ -17,6 +17,9 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.2" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -102,6 +105,8 @@
     <Compile Include="ViewModel\Command\CaptureMoreTextCommand.cs" />
     <Compile Include="ViewModel\Command\CheckDictionaryLittleDCommand.cs" />
     <Compile Include="ViewModel\Command\CheckDictionaryCommand.cs" />
+    <Compile Include="ViewModel\Command\CheckDictionaryTanoshiiJapaneseCommand.cs" />
+    <Compile Include="ViewModel\Command\CheckDictionaryWeblioCommand.cs" />
     <Compile Include="ViewModel\Command\EndRenamePageCommand.cs" />
     <Compile Include="ViewModel\Command\StartRenamePageCommand.cs" />
     <Compile Include="ViewModel\Command\CropOriginalScreenshotCommand.cs" />

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ScreenCapDictionaryNoteApp.Core": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "AWSSecretKey": "objVMaM3pR/YWcayhntogzr4KSUfNQvZYBbiKGY5",
+        "AWSAccessKeyId": "AKIAITYMVDYSVVLD7LTQ"
+      }
+    }
+  }
+}

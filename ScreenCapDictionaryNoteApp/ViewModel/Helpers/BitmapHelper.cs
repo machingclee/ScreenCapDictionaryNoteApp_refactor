@@ -290,6 +290,15 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers
         }
 
 
+        public static string imageNameFromFilePath(string filePath)
+        {
+            // the filePath is of the form C:\\ .......... \\Screenshot\\imageName
+
+            string imageName = Regex.Replace(filePath, @"^C:\\.*?Screenshot\\", "");
+            return imageName;
+        }
+
+
 
     }
 }

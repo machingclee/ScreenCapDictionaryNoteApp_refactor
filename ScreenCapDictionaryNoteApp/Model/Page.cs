@@ -53,9 +53,13 @@ namespace ScreenCapDictionaryNoteApp.Model
             get { return _CroppedScreenshotByteArray; }
             set { _CroppedScreenshotByteArray = value; }
         }
+
         public int Version { get; set; }
 
+        public bool IsNewerVersion { get; set; }
 
+        public bool IsImgNewerVersion { get; set; }
 
+        public bool IsSyncToS3 { get; set; }
     }
 }

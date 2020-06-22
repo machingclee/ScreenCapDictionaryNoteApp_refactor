@@ -22,6 +22,9 @@ namespace ScreenCapDictionaryNoteApp.Model
         public string Pronounciation { get; set; }
 
         public string Explaination { get; set; }
+
         public int Version { get; set; }
+
+        public bool IsNewerVersion { get; set; }
     }
 }
