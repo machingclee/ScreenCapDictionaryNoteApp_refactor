@@ -7,14 +7,17 @@ using System.Web;
 
 namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers.TranslationHelper
 {
-    public class TanoshiiJapanese : AbstractTranslator
+    public class JapanDict : AbstractTranslator
     {
+        public JapanDict(MainVM mainVM) : base(mainVM)
+        {
+        }
 
         protected override string BASE_URL
         {
             get
             {
-                return "https://www.tanoshiijapanese.com/dictionary/index.cfm?j=";
+                return "https://www.japandict.com/";
             }
         }
 

@@ -23,6 +23,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static ScreenCapDictionaryNoteApp.ViewModel.Helpers.WebServiceHelper;
 using static ScreenCapDictionaryNoteApp.ViewModel.MainVM;
 using Application = System.Windows.Application;
 
@@ -80,13 +81,6 @@ namespace ScreenCapDictionaryNoteApp.View
             MainVM.browserAddress = "https://www.japandict.com/";
 
 
-            //event
-            MainVM.DataSubmitted += (sender, eventArgs) =>
-            {
-                string message = (eventArgs as DataSubmittedEventArgs).Message;
-                var messagePopup = new Notification(message);
-                messagePopup.ShowDialog();
-            };
 
 
 

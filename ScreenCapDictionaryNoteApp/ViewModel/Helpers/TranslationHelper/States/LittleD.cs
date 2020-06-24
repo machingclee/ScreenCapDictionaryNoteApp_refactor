@@ -9,6 +9,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers.TranslationHelper
 {
     public class LittleD : AbstractTranslator
     {
+        public LittleD(MainVM mainVM) : base(mainVM)
+        {
+        }
 
         protected override string BASE_URL
         {

@@ -7,16 +7,17 @@ using System.Web;
 
 namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers.TranslationHelper
 {
-    public class JapanDict : AbstractTranslator
+    public class Weblio : AbstractTranslator
     {
-
-
+        public Weblio(MainVM mainVM) : base(mainVM)
+        {
+        }
 
         protected override string BASE_URL
         {
             get
             {
-                return "https://www.japandict.com/";
+                return "https://ejje.weblio.jp/content/";
             }
         }
 

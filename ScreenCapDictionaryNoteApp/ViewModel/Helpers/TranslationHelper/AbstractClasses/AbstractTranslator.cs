@@ -12,9 +12,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Helpers.TranslationHelper
 
         protected MainVM MainVM;
 
-        public AbstractTranslator()
+        public AbstractTranslator(MainVM mainVM)
         {
-            this.MainVM = App.Current.MainWindow.Resources[Constants.MAIN_VM] as MainVM;
+            this.MainVM = mainVM;
         }
 
         public abstract void Translate();

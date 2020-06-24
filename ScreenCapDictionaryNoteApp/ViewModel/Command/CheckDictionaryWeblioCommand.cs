@@ -9,8 +9,13 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 {
     public class CheckDictionaryWeblioCommand : ICommand
     {
+
         public MainVM MainVM { get; set; }
 
+        public CheckDictionaryWeblioCommand(MainVM mainVM)
+        {
+            this.MainVM = mainVM;
+        }
 
 
         public event EventHandler CanExecuteChanged;
@@ -23,7 +28,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
         public void Execute(object parameter)
         {
             var translator = new Translation();
-            translator.SetTranslator(new Weblio());
+            translator.SetTranslator(new Weblio(MainVM));
             translator.Translate();
         }
     }

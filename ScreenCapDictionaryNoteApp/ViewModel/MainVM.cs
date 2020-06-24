@@ -313,31 +313,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
 
 
-        public NewNoteCommand NewNoteCommand { get; set; }
-        public DeleteNoteCommand DeleteNoteCommand { get; set; }
-        public NewPageCommand NewPageCommand { get; set; }
-        public DeletePageCommand DeletePageCommand { get; set; }
-        public RenameNoteCommand RenameNoteCommand { get; set; }
-        public HasEditedNoteNameCommand HasEditedNoteNameCommand { get; set; }
-        public ScreenCapCommand ScreenCapCommand { get; set; }
-        public UsePreviousSelectionCommand UsePreviousSelectionCommand { get; set; }
-        public DoNotUsePreviousSelectionCommand DoNotUsePreviousSelectionCommand { get; set; }
-        public CheckDictionaryCommand CheckDictionaryCommand { get; set; }
-        public GoogleTranslateCommand GoogleTranslateCommand { get; set; }
-        public NewVocabCommand NewVocabCommand { get; set; }
-        public DeleteVocabCommand DeleteVocabCommand { get; set; }
-        public StartUpdateVocabCommand StartUpdateVocabCommand { get; set; }
-        public EndUpdateVocabCommand EndUpdateVocabCommand { get; set; }
-        public CropOriginalScreenshotCommand CropOriginalScreenshotCommand { get; set; }
-        public NewPageViaScreenshotCommand NewPageViaScreenshotCommand { get; set; }
-        public CaptureMoreTextCommand CaptureMoreTextCommand { get; set; }
-        public StartRenamePageCommand StartRenamePageCommand { get; set; }
-        public EndRenamePageCommand EndRenamePageCommand { get; set; }
-        public ToggleUpdateVocabCommand ToggleUpdateVocabCommand { get; set; }
-        public CheckDictionaryLittleDCommand CheckDictionaryLittleDCommand { get; set; }
-        public SyncVocabsCommand SyncVocabsCommand { get; set; }
-        public CheckDictionaryWeblioCommand CheckDictionaryWeblioCommand { get; set; }
-        public CheckDictionaryTanoshiiJapaneseCommand CheckDictionaryTanoshiiJapaneseCommand { get; set; }
 
         private Note _SelectedNote;
 
@@ -368,9 +343,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             }
         }
 
-
-
-
         private Page _SelectedPage;
 
         public Page SelectedPage
@@ -384,9 +356,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
                 CommandManager.InvalidateRequerySuggested();
             }
         }
-
-
-
         private System.Windows.WindowState _WindowState;
 
         public System.Windows.WindowState WindowState
@@ -400,86 +369,64 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         }
 
 
-
-
-
-
+        public Commands Commands { get; }
 
         public MainVM()
         {
 
-
-
             if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
             {
-                Notes = new ObservableCollection<Note>();
-                Notes.Add(new Note() { Name = "note1", DateTime = DateTime.Now.ToShortDateString() });
-                Notes.Add(new Note() { Name = "note2", DateTime = DateTime.Now.ToShortDateString() });
-                Notes.Add(new Note() { Name = "note3", DateTime = DateTime.Now.ToShortDateString() });
-
-                Pages = new ObservableCollection<Page>();
-                Pages.Add(new Page() { Name = "Screenshot", DateTime = DateTime.Now.ToShortDateString() });
-                Pages.Add(new Page() { Name = "Screenshot", DateTime = DateTime.Now.ToShortDateString() });
-                Pages.Add(new Page() { Name = "Screenshot", DateTime = DateTime.Now.ToShortDateString() });
-                IsEditingNoteName = false;
-                IsEditingVocab = false;
-
-                Vocabs = new ObservableCollection<Vocab>();
-                Vocabs.Add(new Vocab() { PageId = 1, Word = "123", Explaination = "321", Pronounciation = "aaa" });
-                Vocabs.Add(new Vocab() { PageId = 1, Word = "456", Explaination = "654", Pronounciation = "bbb" });
-                Vocabs.Add(new Vocab() { PageId = 1, Word = "789", Explaination = "987", Pronounciation = "ccc" });
+                designInit();
             }
             else
             {
-
-                WindowState = System.Windows.WindowState.Normal;
-                NewNoteCommand = new NewNoteCommand(this);
-                DeleteNoteCommand = new DeleteNoteCommand(this);
-                NewPageCommand = new NewPageCommand(this);
-                DeletePageCommand = new DeletePageCommand(this);
-                RenameNoteCommand = new RenameNoteCommand(this);
-                ScreenCapCommand = new ScreenCapCommand(this);
-                HasEditedNoteNameCommand = new HasEditedNoteNameCommand(this);
-                UsePreviousSelectionCommand = new UsePreviousSelectionCommand(this);
-                DoNotUsePreviousSelectionCommand = new DoNotUsePreviousSelectionCommand(this);
-                CheckDictionaryCommand = new CheckDictionaryCommand();
-                GoogleTranslateCommand = new GoogleTranslateCommand(this);
-                DeleteVocabCommand = new DeleteVocabCommand(this);
-                NewVocabCommand = new NewVocabCommand(this);
-                StartUpdateVocabCommand = new StartUpdateVocabCommand(this);
-                EndUpdateVocabCommand = new EndUpdateVocabCommand(this);
-                CropOriginalScreenshotCommand = new CropOriginalScreenshotCommand(this);
-                NewPageViaScreenshotCommand = new NewPageViaScreenshotCommand(this);
-                CaptureMoreTextCommand = new CaptureMoreTextCommand(this);
-                StartRenamePageCommand = new StartRenamePageCommand(this);
-                EndRenamePageCommand = new EndRenamePageCommand(this);
-                ToggleUpdateVocabCommand = new ToggleUpdateVocabCommand(this);
-                CheckDictionaryLittleDCommand = new CheckDictionaryLittleDCommand();
-                SyncVocabsCommand = new SyncVocabsCommand(this);
-                CheckDictionaryWeblioCommand = new CheckDictionaryWeblioCommand();
-                CheckDictionaryTanoshiiJapaneseCommand = new CheckDictionaryTanoshiiJapaneseCommand();
-
-                Notes = new ObservableCollection<Note>();
-                Pages = new ObservableCollection<Page>();
-                Vocabs = new ObservableCollection<Vocab>();
-                ReadNotes();
-                ReadPages();
-                IsEditingNoteName = false;
-                IsEditingVocab = false;
-                DisplayIndex = 0;
-                DoUsePreviousSelection = false;
-                browserAddress = "";
-
-
-                SelectedPageIndex = 0;
-                NoPreviousCropButtonIsSelected = true;
-                IsRenamingPage = false;
+                this.Commands = new Commands(this);
+                init();
             }
         }
 
+        private void designInit()
+        {
+            Notes = new ObservableCollection<Note>();
+            Notes.Add(new Note() { Name = "note1", DateTime = DateTime.Now.ToShortDateString() });
+            Notes.Add(new Note() { Name = "note2", DateTime = DateTime.Now.ToShortDateString() });
+            Notes.Add(new Note() { Name = "note3", DateTime = DateTime.Now.ToShortDateString() });
+
+            Pages = new ObservableCollection<Page>();
+            Pages.Add(new Page() { Name = "Screenshot", DateTime = DateTime.Now.ToShortDateString() });
+            Pages.Add(new Page() { Name = "Screenshot", DateTime = DateTime.Now.ToShortDateString() });
+            Pages.Add(new Page() { Name = "Screenshot", DateTime = DateTime.Now.ToShortDateString() });
+            IsEditingNoteName = false;
+            IsEditingVocab = false;
+
+            Vocabs = new ObservableCollection<Vocab>();
+            Vocabs.Add(new Vocab() { PageId = 1, Word = "123", Explaination = "321", Pronounciation = "aaa" });
+            Vocabs.Add(new Vocab() { PageId = 1, Word = "456", Explaination = "654", Pronounciation = "bbb" });
+            Vocabs.Add(new Vocab() { PageId = 1, Word = "789", Explaination = "987", Pronounciation = "ccc" });
+        }
+
+        private void init()
+        {
+            WindowState = System.Windows.WindowState.Normal;
 
 
 
+            Notes = new ObservableCollection<Note>();
+            Pages = new ObservableCollection<Page>();
+            Vocabs = new ObservableCollection<Vocab>();
+            ReadNotes();
+            ReadPages();
+            IsEditingNoteName = false;
+            IsEditingVocab = false;
+            DisplayIndex = 0;
+            DoUsePreviousSelection = false;
+            browserAddress = "";
+
+
+            SelectedPageIndex = 0;
+            NoPreviousCropButtonIsSelected = true;
+            IsRenamingPage = false;
+        }
 
 
 
@@ -509,8 +456,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             }
         }
 
-
-
         public void ReadPages()
         {
             List<Page> pages;
@@ -538,8 +483,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
         }
 
-
-
         public void ReadVocabs()
         {
             List<Vocab> vocabs;
@@ -565,20 +508,9 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
 
         }
 
-
-
-
-
-
-
-
-
-
         public void DeleteNote()
         {
             DatabaseHelper.Delete(SelectedNote);
-
-
 
             foreach (Page page in Pages)
             {
@@ -611,11 +543,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             DatabaseHelper.Delete(SelectedVocab);
             ReadVocabs();
         }
-
-
-
-
-
 
         public void NewPage()
         {
@@ -658,10 +585,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             ReadVocabs();
         }
 
-
-
-
-
         public void DeletePage()
         {
             DatabaseHelper.Delete(SelectedPage);
@@ -684,13 +607,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             ReadPages();
         }
 
-
-
-
-
-
-
-
         public event EventHandler RenameNoteStarted;
 
         public void RenameNote()
@@ -707,11 +623,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             IsEditingNoteName = false;
         }
 
-
-
-
-
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void onPropertyChanged(string propertyName)
@@ -726,8 +637,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         public static event EventHandler ScreenshotIsTaken;
 
         public static event EventHandler CheckApplicationLyingInWhichDisplay;
-
-
 
         public void TakeScreenShot()
         {
@@ -767,9 +676,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             DoUsePreviousSelection = false;
         }
 
-
-
-
         public event EventHandler GoogleTranslateComplete;
 
         public void GoogleTranslate()
@@ -795,7 +701,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             DatabaseHelper.Update(SelectedVocab);
         }
 
-
         public event EventHandler CropOriginalScreenshot;
 
         public void CropOriginal()
@@ -803,12 +708,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             CropOriginalScreenshot(this, new EventArgs());
         }
 
-
-
-
         public static event EventHandler NewPageViaScreenshotIsTaken;
-
-
 
         public void NewPageViaScreenshot()
         {
@@ -828,9 +728,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             {
                 CurrentScreenshot = BitmapHelper.SaveBitmapReturnPath(BitmapHelper.TakeScreenShot(DisplayIndex), SelectedPage);
             }
-
-
-
 
             var newPage = new Page()
             {
@@ -883,7 +780,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
             }
         }
 
-
         public void toggleUpdateVocabCommand()
         {
             if (IsEditingVocab == false)
@@ -897,37 +793,6 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         }
 
 
-        private class SyncInfoModel
-        {
-            public List<Note> Notes { get; set; }
-            public List<Page> Pages { get; set; }
-            public List<Vocab> Vocabs { get; set; }
-        }
-
-        private class SyncInfoIdModel
-        {
-            public List<int> NoteIds { get; set; }
-            public List<int> PageIds { get; set; }
-            public List<int> VocabIds { get; set; }
-        }
-
-
-
-
-
-        public event EventHandler DataSubmitted;
-        public class DataSubmittedEventArgs : EventArgs
-        {
-            public string Message { get; set; }
-            public DataSubmittedEventArgs(string msg)
-            {
-                Message = msg;
-            }
-        }
-
-
-
-
         private void RemoveFromS3(string filePath)
         {
             string imageName = BitmapHelper.imageNameFromFilePath(filePath);
@@ -935,86 +800,10 @@ namespace ScreenCapDictionaryNoteApp.ViewModel
         }
 
 
-
-        public async void SyncToWebServer()
+        public void SyncToWebServer()
         {
-            try
-            {
-
-                var processedPage = new List<string>();
-                string postRequestEndPoint = "http://192.168.86.24:3000/screencap/upload";
-                string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTkyMjI1NjYzLCJleHAiOjE1OTQ4MTc2NjN9.8qwthOhdcTiHA6GohlFqKCp1ZJKcLhC12obkqzYEPXo";
-
-
-                List<Note> allNotes = DatabaseHelper.Read<Note>();
-
-                List<Page> allPages = DatabaseHelper.Read<Page>();
-                List<Vocab> allVocabs = DatabaseHelper.Read<Vocab>();
-
-
-                foreach (var page in allPages.ToList())
-                {
-                    if (page.CroppedScreenshotByteArray == null)
-                    {
-                        var list = allVocabs.RemoveAll(vocab => vocab.PageId == page.Id);
-                        allPages.Remove(page);
-                    }
-                }
-
-
-
-
-
-
-                // ------------------- add necessary update  ------------------- 
-
-                var syncInfo = new SyncInfoModel()
-                {
-                    Notes = allNotes,
-                    Pages = allPages,
-                    Vocabs = allVocabs
-                };
-
-                foreach (Page page in allPages)
-                {
-                    if (!page.IsSyncToS3)
-                    {
-                        if (page.CroppedScreenshotByteArray != null)
-                        {
-                            AWSHelper.UploadFileAsync("cclee", page.CroppedScreenshotByteArray);
-                            page.IsSyncToS3 = true;
-                            DatabaseHelper.Update(page);
-                        }
-                    }
-                }
-
-
-                var jsonStringForUpdate = JsonConvert.SerializeObject(syncInfo);
-
-
-                using (var client = new HttpClient())
-                {
-
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-
-                    var updateContent = new StringContent(jsonStringForUpdate, Encoding.UTF8, "application/json");
-
-                    try
-                    {
-                        await client.PostAsync(postRequestEndPoint, updateContent);
-                    }
-                    catch (Exception err)
-                    {
-                        Debug.WriteLine(err.Message);
-                    }
-                }
-
-                DataSubmitted(this, new DataSubmittedEventArgs(String.Join(", ", processedPage)));
-            }
-            catch (Exception err)
-            {
-                DataSubmitted(this, new DataSubmittedEventArgs(err.Message));
-            }
+            (new WebServiceHelper()).SyncToWebServer();
         }
+
     }
 }

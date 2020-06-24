@@ -11,6 +11,12 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
     {
         public MainVM MainVM { get; set; }
 
+        public CheckDictionaryTanoshiiJapaneseCommand(MainVM mainVM)
+        {
+            this.MainVM = mainVM;
+        }
+
+
         public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
@@ -21,7 +27,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
         public void Execute(object parameter)
         {
             var translator = new Translation();
-            translator.SetTranslator(new TanoshiiJapanese());
+            translator.SetTranslator(new TanoshiiJapanese(MainVM));
             translator.Translate();
         }
     }

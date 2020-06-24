@@ -10,9 +10,14 @@ using System.Windows.Input;
 
 namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 {
-    public class CheckDictionaryCommand : ICommand
+    public class CheckDictionaryJapanDictCommand : ICommand
     {
-        public MainVM MainVM { get; set; }
+        public MainVM MainVM;
+
+        public CheckDictionaryJapanDictCommand(MainVM mainVM)
+        {
+            this.MainVM = mainVM;
+        }
 
         public event EventHandler CanExecuteChanged
         {
@@ -28,7 +33,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
         public void Execute(object parameter)
         {
             var translator = new Translation();
-            translator.SetTranslator(new JapanDict());
+            translator.SetTranslator(new JapanDict(MainVM));
             translator.Translate();
         }
     }

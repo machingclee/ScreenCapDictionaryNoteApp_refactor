@@ -11,6 +11,15 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
 {
     public class CheckDictionaryLittleDCommand : ICommand
     {
+
+        public MainVM MainVM;
+
+        public CheckDictionaryLittleDCommand(MainVM mainVM)
+        {
+            this.MainVM = mainVM;
+        }
+
+
         public event EventHandler CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
@@ -25,7 +34,7 @@ namespace ScreenCapDictionaryNoteApp.ViewModel.Command
         public void Execute(object parameter)
         {
             var translator = new Translation();
-            translator.SetTranslator(new LittleD());
+            translator.SetTranslator(new LittleD(MainVM));
             translator.Translate();
         }
     }

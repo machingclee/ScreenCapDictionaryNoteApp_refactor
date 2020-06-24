@@ -137,7 +137,7 @@
                    >
             <Menu Grid.Column="0" VerticalAlignment="Center" Grid.ColumnSpan="3" Margin="10 5"  >
                 <MenuItem Header="File" Margin="2 4" BorderBrush="Transparent">
-                    <MenuItem Header="New Note" Command="{Binding NewNoteCommand}"/>
+                    <MenuItem Header="New Note" Command="{Binding Commands.NewNoteCommand}"/>
                     <MenuItem Header="Exit"/>
                 </MenuItem>
             </Menu>
@@ -203,13 +203,13 @@
 
 
             <StackPanel Orientation="Horizontal" Grid.Column="3"  HorizontalAlignment="Right">
-                <Button  Margin="0 5 20 5" Content="Sync To Web Server"   Command="{Binding SyncVocabsCommand}"                      
+                <Button  Margin="0 5 20 5" Content="Sync To Web Server"   Command="{Binding Commands.SyncVocabsCommand}"                      
                         />
-                <Button  Margin="0 5 20 5" Content="Capture more text" Command="{Binding CaptureMoreTextCommand}"
+                <Button  Margin="0 5 20 5" Content="Capture more text" Command="{Binding Commands.CaptureMoreTextCommand}"
                         CommandParameter="{Binding SelectedPage.ScreenshotByteArray}"
                         />
 
-                <Button Margin="0 5 20 5" Padding="5 0" Content="Crop image" Command="{Binding CropOriginalScreenshotCommand}" CommandParameter="{Binding SelectedPage}"
+                <Button Margin="0 5 20 5" Padding="5 0" Content="Crop image" Command="{Binding Commands.CropOriginalScreenshotCommand}" CommandParameter="{Binding SelectedPage}"
                     
                         />
 
@@ -257,7 +257,7 @@
 
                         <Button  HorizontalAlignment="Stretch"
                                  Margin="0 10 0 10"
-                                 Command="{Binding NewNoteCommand}" 
+                                 Command="{Binding Commands.NewNoteCommand}" 
                                  ToolTip="Add a new note"
                                  DockPanel.Dock="Top" 
                             
@@ -286,11 +286,11 @@
                                                         </MultiBinding>
                                                     </TextBox.Visibility>
                                                     <TextBox.InputBindings>
-                                                        <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=HasEditedNoteNameCommand}"/>
+                                                        <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=Commands.HasEditedNoteNameCommand}"/>
                                                     </TextBox.InputBindings>
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="MouseDoubleClick">
-                                                            <i:InvokeCommandAction Command="{Binding Source={StaticResource mainVM}, Path=RenameNoteCommand}" CommandParameter="{Binding Source={StaticResource mainVM}, Path=SelectedNote}" />
+                                                            <i:InvokeCommandAction Command="{Binding Source={StaticResource mainVM}, Path=Commands.RenameNoteCommand}" CommandParameter="{Binding Source={StaticResource mainVM}, Path=SelectedNote}" />
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>
 
@@ -313,15 +313,15 @@
                             </ListView.ItemTemplate>
                             <ListView.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="New page" Command="{Binding Source={StaticResource mainVM},  Path=NewPageCommand, Mode=TwoWay}" />
-                                    <MenuItem Header="Rename" Command="{Binding Source={StaticResource mainVM},Path=RenameNoteCommand}"/>
-                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=DeleteNoteCommand}"/>
+                                    <MenuItem Header="New page" Command="{Binding Source={StaticResource mainVM},  Path=Commands.NewPageCommand, Mode=TwoWay}" />
+                                    <MenuItem Header="Rename" Command="{Binding Source={StaticResource mainVM},Path=Commands.RenameNoteCommand}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=Commands.DeleteNoteCommand}"/>
                                 </ContextMenu>
                             </ListView.ContextMenu>
 
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick">
-                                    <i:InvokeCommandAction Command="{Binding RenameNoteCommand}" CommandParameter="{Binding SelectedNote}" />
+                                    <i:InvokeCommandAction Command="{Binding Commands.RenameNoteCommand}" CommandParameter="{Binding SelectedNote}" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
 
@@ -364,7 +364,7 @@
 
                             <Button x:Name="screenshotButton2"  
                                     Grid.Column="2"
-                                    Command="{Binding NewPageViaScreenshotCommand}" 
+                                    Command="{Binding Commands.NewPageViaScreenshotCommand}" 
                                     CommandParameter="{Binding SelectedNote, Mode=TwoWay}"
                                     HorizontalAlignment="Stretch" DockPanel.Dock="Top"
                                     ToolTip="New page via screenshot"
@@ -433,17 +433,17 @@
 
                             <ListView.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Rename" Command="{Binding Source={StaticResource mainVM}, Path=StartRenamePageCommand}" CommandParameter="{Binding SelectedPage}"/>
-                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=DeletePageCommand}"/>
+                                    <MenuItem Header="Rename" Command="{Binding Source={StaticResource mainVM}, Path=Commands.StartRenamePageCommand}" CommandParameter="{Binding SelectedPage}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=Commands.DeletePageCommand}"/>
                                 </ContextMenu>
                             </ListView.ContextMenu>
                             <ListView.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=EndRenamePageCommand}"/>
+                                <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=Commands.EndRenamePageCommand}"/>
 
                             </ListView.InputBindings>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick">
-                                    <i:InvokeCommandAction Command="{Binding StartRenamePageCommand}" CommandParameter="{Binding SelectedPage}" />
+                                    <i:InvokeCommandAction Command="{Binding Commands.StartRenamePageCommand}" CommandParameter="{Binding SelectedPage}" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
 
@@ -501,18 +501,18 @@
                             <RichTextBox.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="沪江小D" 
-                                            Command="{Binding CheckDictionaryLittleDCommand}"
+                                            Command="{Binding Commands.CheckDictionaryLittleDCommand}"
                                           />
                                     <MenuItem Header="Japan Dict" 
-                                          Command="{Binding CheckDictionaryCommand}"
+                                          Command="{Binding Commands.CheckDictionaryCommand}"
                                           />
 
                                     <MenuItem Header="Tanoshii Japanese 例文(日英)" 
-                                          Command="{Binding CheckDictionaryTanoshiiJapaneseCommand}"
+                                          Command="{Binding Commands.CheckDictionaryTanoshiiJapaneseCommand}"
                                           />
 
                                     <MenuItem Header="Weblio 例文(日英)" 
-                                          Command="{Binding CheckDictionaryWeblioCommand}"
+                                          Command="{Binding Commands.CheckDictionaryWeblioCommand}"
                                           />
 
 
@@ -562,7 +562,7 @@
                     <DockPanel Grid.Row="1"  LastChildFill="True">
                         <!--<TextBlock Height="20"  DockPanel.Dock="Top"/>-->
 
-                        <Button Margin="0 10 10 10" Padding="10 5"  HorizontalAlignment="Left" Command="{Binding NewVocabCommand}" CommandParameter="{Binding SelectedPage}" DockPanel.Dock="Top">
+                        <Button Margin="0 10 10 10" Padding="10 5"  HorizontalAlignment="Left" Command="{Binding Commands.NewVocabCommand}" CommandParameter="{Binding SelectedPage}" DockPanel.Dock="Top">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="{StaticResource addIcon}" Height="20">
                                     <Image.Style>
@@ -660,14 +660,14 @@
                             </ListView.ItemTemplate>
                             <ListView.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Update" Command="{Binding Source={StaticResource mainVM}, Path=StartUpdateVocabCommand}"/>
-                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=DeleteVocabCommand}" CommandParameter="{Binding SelectedPage, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <MenuItem Header="Update" Command="{Binding Source={StaticResource mainVM}, Path=Commands.StartUpdateVocabCommand}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Source={StaticResource mainVM}, Path=Commands.DeleteVocabCommand}" CommandParameter="{Binding SelectedPage, UpdateSourceTrigger=PropertyChanged}"/>
                                 </ContextMenu>
                             </ListView.ContextMenu>
 
 
                             <ListView.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=ToggleUpdateVocabCommand}" CommandParameter="{Binding SelectedVocab}"/>
+                                <KeyBinding Key="Return" Command="{Binding Source={StaticResource mainVM}, Path=CommandsToggleUpdateVocabCommand}" CommandParameter="{Binding SelectedVocab}"/>
                             </ListView.InputBindings>
 
                             <i:Interaction.Triggers>
